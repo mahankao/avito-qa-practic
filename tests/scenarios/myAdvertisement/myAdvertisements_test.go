@@ -12,7 +12,6 @@ import (
 	"api-tests-template/internal/managers/auth"
 	"api-tests-template/internal/managers/auth/models"
 	"api-tests-template/internal/managers/myAdvertisements"
-
 	base "api-tests-template/tests"
 )
 

@@ -10,6 +10,7 @@ import (
 	"api-tests-template/internal/managers/advertisements/models"
 )
 
+// HttpGetAdvertisements ищет объявления по подстроке названия
 func HttpGetAdvertisements(t *testing.T, token, textForSearch string) *http.Response {
 	return apiRunner.GetRunner().Auth(token).Create().
 		Get(path.AdvertisementsPath).
@@ -19,6 +20,7 @@ func HttpGetAdvertisements(t *testing.T, token, textForSearch string) *http.Resp
 		End().Response
 }
 
+// HttpPostAdvertisement отправляет запрос создания объявления и проверяет ожидаемый статус
 func HttpPostAdvertisement(t *testing.T, token string, request models.CreateAdvertisementRequest, expectedStatus int) *http.Response {
 	return apiRunner.GetRunner().Auth(token).Create().
 		Post(path.AdvertisementPath).
@@ -32,7 +34,7 @@ func HttpPostAdvertisement(t *testing.T, token string, request models.CreateAdve
 		End().Response
 }
 
-// HttpGetAdvertisement получает объявление по ID
+// HttpGetAdvertisement получает объявление по id
 func HttpGetAdvertisement(t *testing.T, token, id string) *http.Response {
 	return apiRunner.GetRunner().Auth(token).Create().
 		Get(path.AdvertisementPath).
@@ -42,7 +44,7 @@ func HttpGetAdvertisement(t *testing.T, token, id string) *http.Response {
 		End().Response
 }
 
-// HttpDeleteAdvertisement удаляет объявление по ID
+// HttpDeleteAdvertisement удаляет объявление по id
 func HttpDeleteAdvertisement(t *testing.T, token, id string) *http.Response {
 	return apiRunner.GetRunner().Auth(token).Create().
 		Delete(path.AdvertisementPath).
@@ -52,7 +54,7 @@ func HttpDeleteAdvertisement(t *testing.T, token, id string) *http.Response {
 		End().Response
 }
 
-// HttpGetAdvertisementPhotos получает фотографии объявления по ID
+// HttpGetAdvertisementPhotos получает фотографии объявления по id
 func HttpGetAdvertisementPhotos(t *testing.T, token, id string) *http.Response {
 	return apiRunner.GetRunner().Auth(token).Create().
 		Get(path.AdvertisementsPath + "/" + id + "/photos").

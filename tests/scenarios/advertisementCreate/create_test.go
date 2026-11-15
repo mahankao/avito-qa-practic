@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	"api-tests-template/internal/assertions"
@@ -15,8 +16,6 @@ import (
 	"api-tests-template/internal/managers/auth/models"
 	"api-tests-template/internal/utils"
 	base "api-tests-template/tests"
-
-	"github.com/stretchr/testify/require"
 )
 
 type TestSuite struct {
@@ -63,7 +62,6 @@ func (s *TestSuite) TestCreateAdvertisementPositive() {
 		require.NotEmpty(s.T(), photo.ID, "У фотографии отсутствует ID")
 		require.NotEmpty(s.T(), photo.URL, "У фотографии отсутствует URL")
 	}
-
 }
 
 func (s *TestSuite) TestCreateAdvertisementEmptyTitle() {
