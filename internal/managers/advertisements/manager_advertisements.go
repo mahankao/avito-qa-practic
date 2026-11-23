@@ -12,15 +12,16 @@ import (
 	"api-tests-template/internal/managers/advertisements/models"
 )
 
+// GetAdvertisementsList возвращает объявления по поисковой строке
 func GetAdvertisementsList(t *testing.T, token, text string) models.AdvertisementsList {
 	raw := advertisements.HttpGetAdvertisements(t, token, text)
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Поиск объявлений: не удалось прочитать ответ")
 
 	resp := models.AdvertisementsList{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Поиск объявлений: не удалось разобрать JSON")
 
 	return resp
 }
@@ -31,10 +32,10 @@ func CreateAdvertisement(t *testing.T, token string, request models.CreateAdvert
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Создание объявления: не удалось прочитать ответ")
 
 	resp := models.Advertisement{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Создание объявления: не удалось разобрать JSON")
 
 	return resp
 }
@@ -45,10 +46,10 @@ func CreateAdvertisementExpectError(t *testing.T, token string, request models.C
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Ошибка создания объявления: не удалось прочитать ответ")
 
 	resp := models.ErrorResponse{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Ошибка создания объявления: не удалось разобрать JSON")
 
 	return resp
 }
@@ -59,10 +60,10 @@ func GetAdvertisement(t *testing.T, token string, id string) models.Advertisemen
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Получение объявления: не удалось прочитать ответ")
 
 	resp := models.Advertisement{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Получение объявления: не удалось разобрать JSON")
 
 	return resp
 }
@@ -79,10 +80,10 @@ func GetAdvertisementPhotos(t *testing.T, token string, id string) []models.Phot
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Получение фотографий: не удалось прочитать ответ")
 
 	resp := []models.Photo{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Получение фотографий: не удалось разобрать JSON")
 
 	return resp
 }

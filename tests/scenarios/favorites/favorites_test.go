@@ -10,16 +10,16 @@ import (
 
 	"api-tests-template/internal/assertions"
 	"api-tests-template/internal/managers/advertisements"
-	adModels "api-tests-template/internal/managers/advertisements/models"
 	"api-tests-template/internal/managers/auth"
 	"api-tests-template/internal/managers/auth/models"
 	"api-tests-template/internal/managers/favorites"
 	favModels "api-tests-template/internal/managers/favorites/models"
-	"api-tests-template/internal/utils"
 	base "api-tests-template/tests"
+	"api-tests-template/tests/fixtures"
 )
 
 const (
+	testPhotoPath               = "../advertisementCreate/testdata/photo.jpg"
 	nonexistentAdvertisementID  = "12345678-1234-4123-8123-123456789012"
 	unauthorizedError           = "unauthorized"
 	missingAuthorizationMessage = "Authorization header required"
@@ -46,13 +46,7 @@ func (s *TestSuite) TestFavoritesPositive() {
 	require.NotEqual(s.T(), s.loginData.User.Id, secondUser.User.Id, "Для теста нужны два разных аккаунта")
 
 	s.T().Log("Подготовка: первый пользователь создаёт объявление")
-	request := adModels.CreateAdvertisementRequest{
-		Title:       "Избранное " + utils.RandomString(8),
-		Description: "Объявление для позитивного теста избранного",
-		Price:       100,
-		Quantity:    1,
-		Photos:      []string{"../advertisementCreate/testdata/photo.jpg"},
-	}
+	request := fixtures.NewAdvertisementRequest(testPhotoPath)
 	ad := advertisements.CreateAdvertisement(s.T(), s.loginData.Token, request)
 	adDeleted := false
 	defer func() {
@@ -85,9 +79,15 @@ func (s *TestSuite) TestFavoritesPositive() {
 	require.False(s.T(), assertions.FavoriteContainsAdvertisement(list.Items, ad.ID), "Удалённая запись осталась в избранном")
 	s.T().Log("Проверено: после удаления из избранного записи нет")
 
-	s.T().Log("Добавляем объявление снова и удаляем само объявление от имени владельца")
+	s.T().Log("Повторно добавляем объявление и проверяем его наличие в избранном")
 	favorites.AddFavorite(s.T(), secondUser.Token, favoriteRequest)
 	favoriteAdded = true
+	list = favorites.GetFavoritesList(s.T(), secondUser.Token)
+	require.True(s.T(), assertions.FavoriteContainsAdvertisement(list.Items, ad.ID),
+		"Перед удалением объявления его запись отсутствует в избранном")
+	s.T().Log("Проверено: после повторного добавления запись вернулась в избранное")
+
+	s.T().Log("Удаляем само объявление от имени владельца")
 	advertisements.DeleteAdvertisement(s.T(), s.loginData.Token, ad.ID)
 	adDeleted = true
 	list = favorites.GetFavoritesList(s.T(), secondUser.Token)
@@ -156,13 +156,7 @@ func (s *TestSuite) TestDeleteFavoriteWithoutToken() {
 
 func (s *TestSuite) TestAddOwnAdvertisementToFavorites() {
 	s.T().Log("Создаём собственное объявление для проверки запрета добавления в избранное")
-	request := adModels.CreateAdvertisementRequest{
-		Title:       "Своё объявление " + utils.RandomString(8),
-		Description: "Объявление для проверки избранного",
-		Price:       100,
-		Quantity:    1,
-		Photos:      []string{"../advertisementCreate/testdata/photo.jpg"},
-	}
+	request := fixtures.NewAdvertisementRequest(testPhotoPath)
 	ad := advertisements.CreateAdvertisement(s.T(), s.loginData.Token, request)
 	defer advertisements.DeleteAdvertisement(s.T(), s.loginData.Token, ad.ID)
 
@@ -183,13 +177,7 @@ func (s *TestSuite) TestAddFavoriteTwice() {
 	require.NotEqual(s.T(), s.loginData.User.Id, secondUser.User.Id, "Для теста нужны два разных аккаунта")
 
 	s.T().Log("Первый пользователь создаёт объявление")
-	adRequest := adModels.CreateAdvertisementRequest{
-		Title:       "Повторное добавление " + utils.RandomString(8),
-		Description: "Объявление для проверки повторного добавления в избранное",
-		Price:       100,
-		Quantity:    1,
-		Photos:      []string{"../advertisementCreate/testdata/photo.jpg"},
-	}
+	adRequest := fixtures.NewAdvertisementRequest(testPhotoPath)
 	ad := advertisements.CreateAdvertisement(s.T(), s.loginData.Token, adRequest)
 	defer advertisements.DeleteAdvertisement(s.T(), s.loginData.Token, ad.ID)
 

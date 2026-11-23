@@ -19,10 +19,10 @@ func AddFavorite(t *testing.T, token string, request models.AddFavoriteRequest) 
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Добавление в избранное: не удалось прочитать ответ")
 
 	resp := models.Favorite{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Добавление в избранное: не удалось разобрать JSON")
 
 	return resp
 }
@@ -34,11 +34,11 @@ func GetFavoritesList(t *testing.T, token string) models.FavoritesList {
 		raw := favorites.HttpGetFavorites(t, token, http.StatusOK, page)
 		body, err := io.ReadAll(raw.Body)
 		closeErr := raw.Body.Close()
-		require.NoError(t, err)
-		require.NoError(t, closeErr)
+		require.NoError(t, err, "Получение избранного: не удалось прочитать ответ")
+		require.NoError(t, closeErr, "Получение избранного: не удалось закрыть тело ответа")
 
 		resp := models.FavoritesList{}
-		require.NoError(t, json.Unmarshal(body, &resp))
+		require.NoError(t, json.Unmarshal(body, &resp), "Получение избранного: не удалось разобрать JSON")
 		result.Items = append(result.Items, resp.Items...)
 		result.TotalPages = resp.TotalPages
 		if page >= resp.TotalPages {
@@ -59,10 +59,10 @@ func GetFavoritesExpectError(t *testing.T, token string, expectedStatus int) adM
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Ошибка получения избранного: не удалось прочитать ответ")
 
 	resp := adModels.ErrorResponse{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Ошибка получения избранного: не удалось разобрать JSON")
 
 	return resp
 }
@@ -73,10 +73,10 @@ func AddFavoriteExpectError(t *testing.T, token string, request models.AddFavori
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Ошибка добавления в избранное: не удалось прочитать ответ")
 
 	resp := adModels.ErrorResponse{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Ошибка добавления в избранное: не удалось разобрать JSON")
 
 	return resp
 }
@@ -87,10 +87,10 @@ func DeleteFavoriteExpectError(t *testing.T, token, ad_id string, expectedStatus
 	defer raw.Body.Close()
 
 	body, err := io.ReadAll(raw.Body)
-	require.NoError(t, err)
+	require.NoError(t, err, "Ошибка удаления из избранного: не удалось прочитать ответ")
 
 	resp := adModels.ErrorResponse{}
-	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NoError(t, json.Unmarshal(body, &resp), "Ошибка удаления из избранного: не удалось разобрать JSON")
 
 	return resp
 }
